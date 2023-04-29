@@ -15,4 +15,8 @@ class Session extends Model
 
         return Session::find($session_id);
     }
+
+    public function contact() {
+        return $this->belongsTo(Contact::class);
+    }
 }

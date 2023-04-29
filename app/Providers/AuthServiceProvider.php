@@ -26,7 +26,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         Auth::provider('contact', function(Application $app, array $config) {
-            return new ContactProvider($app->make('contact.connection'));
+            return new ContactProvider($app);
         });
 
         $this->registerPolicies();
