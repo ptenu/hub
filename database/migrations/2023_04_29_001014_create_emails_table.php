@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('emails', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Contact::class);
+            $table->ulid('contact_id')->index();
             $table->string('address', 1024)->index()->unique();
             $table->smallInteger('priority')->default(0);
             $table->boolean('disabled')->default(false);

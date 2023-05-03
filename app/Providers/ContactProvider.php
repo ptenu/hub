@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Extensions\ContactSessionHandler;
 use App\Models\Contact;
 use App\Models\Email;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\UserProvider as UserContract;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 
@@ -53,11 +55,32 @@ class ContactProvider extends ServiceProvider implements UserContract
     public function retrieveByCredentials(array $credentials) {
         $email_address = $credentials["email"];
         $email = Email::where('address', $email_address)->first();
+        if ($email == null) {
+            return null;
+        }
         return $email->contact;
     }
 
     public function validateCredentials(Authenticatable $user, array $credentials) {
-        return false;
+        if (is_null($plain = $credentials['password'])) {
+            return false;
+        }
+
+        $result = Hash::check($plain, $user->getAuthPassword());
+        if (!$result) {
+            return false;
+        }
+
+        $email = Email::query()->where('address', $credentials['email'])->first();
+        if (!$email) {
+            return false;
+        }
+
+        session(['verified_at' => Carbon::now()]);
+        $email->verified_at = Carbon::now();
+        $email->save();
+
+        return true;
     }
 
 }

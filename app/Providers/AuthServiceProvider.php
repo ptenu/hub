@@ -28,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         Auth::provider('contact', function(Application $app, array $config) {
             return new ContactProvider($app);
         });
+        Auth::setProvider(new ContactProvider($this->app));
 
         $this->registerPolicies();
     }
