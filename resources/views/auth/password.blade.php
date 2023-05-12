@@ -19,12 +19,12 @@
             </ptu-fieldset>
 
             <ptu-fieldset label="One-time password" @error('password')error-text="{{$message}}"@enderror>
-                <ptu-text-input label="One-time password"
+                <ptu-password-input label="One-time password"
                                 show-label="false"
                                 name="password"
                                 type="password"
                                 autocomplete="one-time-code"
-                                width="30"></ptu-text-input>
+                                width="30"></ptu-password-input>
             </ptu-fieldset>
 
             <p>

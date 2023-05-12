@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -15,6 +16,8 @@ class TempPassword extends Mailable
     use Queueable, SerializesModels;
 
     public string $password;
+    public Carbon $executionTime;
+    public string $timeString;
 
     /**
      * Create a new message instance.
@@ -24,6 +27,8 @@ class TempPassword extends Mailable
     public function __construct(string $password)
     {
         $this->password = $password;
+        $this->executionTime = Carbon::now();
+        $this->timeString = $this->executionTime->format("l jS \\@ h:i A");
     }
 
     /**
@@ -35,7 +40,7 @@ class TempPassword extends Mailable
     {
         return new Envelope(
             from: new Address('security@peterboroughtenants.app', 'Peterborough Tenants Union'),
-            subject: 'Your one time password',
+            subject: 'Your one time password (' . $this->timeString . ')',
         );
     }
 

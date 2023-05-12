@@ -23,6 +23,18 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
+    public function logout(Request $request)
+    {
+        if (Auth::user()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            $request->session()->flash("status", "You have been logged out.");
+        }
+
+        return redirect('/');
+    }
+
     public function requestPassword(Request $request)
     {
         if (Auth::user()) {
@@ -38,28 +50,25 @@ class LoginController extends Controller
             return view('auth.password', ['email' => $credentials['email']]);
         }
 
-        if ($request->session()->get('password_count', 0) == 0) {
-            $this->setAndSendPassword($user, $credentials['email']);
-            return view('auth.password', [
-                'email' => $credentials['email']]);
-        }
-
-        $password_expiry = Carbon::make($request->session()->get('password_sent'));
-        $password_expiry = $password_expiry->addSeconds(256);
-        if ($password_expiry->lessThan(Carbon::now())) {
-            $this->setAndSendPassword($user, $credentials['email']);
-        }
+        $this->setAndSendPassword($user, $credentials['email']);
 
         return view('auth.password', [
             'email' => $credentials['email']]);
     }
 
-    protected function setAndSendPassword($user, $email) {
+    protected function setAndSendPassword($user, $email): void {
+        $session = session();
+        $expr = $session->get('password_sent', Carbon::createFromTimestamp(0));
+
+        if ($session->get('password_count') > 0 && Carbon::now()->isBefore($expr)) {
+            return;
+        }
+
         $words = Word::query()->inRandomOrder()->limit(3)->get();
         $password = $words[0]->word . '-' . $words[1]->word . '-' . $words[2]->word;
         $user->setAuthPassword($password);
 
-        return Mail::to(new Address($email, $user->full_name))->send(new TempPassword($password));
+        Mail::to(new Address($email, $user->full_name))->send(new TempPassword($password));
     }
 
     public function authenticate(Request $request): RedirectResponse

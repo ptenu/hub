@@ -10,8 +10,12 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=sofia-sans:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
     <style>
+        * {
+            box-sizing: border-box;
+        }
         :root {
             --brand-font: 'Sofia Sans';
+            --border-radius: 0;
         }
     </style>
 
@@ -21,7 +25,7 @@
 
 <body>
 <ptu-navbar>
-    <ptu-logo variant='colour'></ptu-logo>
+    <ptu-logo></ptu-logo>
     <ptu-visibility-toggle slot='right' element-id='main-menu'>Menu</ptu-visibility-toggle>
     <ptu-user-button slot="right"
                      @auth authenticated="true" @endauth
@@ -35,7 +39,41 @@
     </ptu-user-button>
 </ptu-navbar>
 <ptu-nav-menu id='main-menu'>
+    @auth
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1">
+        <strong>
+            Hi {{ Auth::user()->given_name }}. <a href="/account">Edit your details</a>.
+        </strong>
+        <aside>
+            <form method="post" action="/logout">
+                {{ csrf_field() }}
+            <button>Logout</button>
+            </form>
+        </aside>
+    </div>
+    @endauth
+        <section>
+            <hgroup>
+                <h5>About us</h5>
+            </hgroup>
+        </section>
+        <section>
+            <hgroup>
+                <h5>Guides & Information</h5>
+            </hgroup>
+        </section>
+        <section>
+            <hgroup>
+                <h5>For members</h5>
+            </hgroup>
+        </section>
 </ptu-nav-menu>
+
+@if(session()->has("status"))
+    <ptu-section class="top-padding bottom-padding">
+        <div class="card">{{session()->get("status")}}</div>
+    </ptu-section>
+@endif
 
 @yield('content')
 
