@@ -1,11 +1,21 @@
-<tr>
-<td>
-<table class="footer" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation">
-<tr>
-<td class="content-cell" align="center">
-{{ Illuminate\Mail\Markdown::parse($slot) }}
-</td>
-</tr>
+<table class="wrapper">
+    <tr>
+        <td class="float-center" align="center" valign="top">
+            <center>
+                <table class="container footer">
+                    <tr>
+                        <td>
+                            <table class="row">
+                                <tr>
+                                    <th class="first columns">
+                                        {{ Illuminate\Mail\Markdown::parse($slot) }}
+                                    </th>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+        </td>
+    </tr>
 </table>
-</td>
-</tr>

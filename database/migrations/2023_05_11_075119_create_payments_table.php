@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedInteger('amount');
             $table->string('status', 50)->default('created');
             $table->string('stripe_payment_intent', 60)->index();
-            $table->string('stripe_payment_method', 60)->index();
+            $table->string('stripe_payment_method', 60)->nullable();
             $table->timestamps();
         });
     }

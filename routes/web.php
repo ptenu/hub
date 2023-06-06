@@ -34,6 +34,7 @@ Route::post('/logout', [LoginController::class, 'logout']);
 | Account
 |--------------------------------------------------------------------------
 */
+Route::get('/dashboard', [AccountController::class, 'dashboard'])->middleware('auth');
 Route::prefix('/account')
     ->controller(AccountController::class)
     ->middleware('auth')
@@ -50,4 +51,13 @@ Route::prefix('/account')
     Route::get('/tenancy', 'viewTenancies');
     Route::get('/tenancy/update', 'updateTenancy');
     Route::post('/tenancy/update', 'saveTenancy');
+    // Membership
+    Route::get('/membership', 'membership');
+    Route::get('/membership/change-payment-day', 'paymentDay');
+    Route::post('/membership/change-payment-day', 'paymentDay');
+    Route::get('/membership/change-rate', 'rate');
+    Route::post('/membership/change-rate', 'rate');
+    Route::get('/membership/update-payment-method', 'getPaymentMethod');
+    // Contact preferences
+    Route::get('/contact-preferences', 'getContactPreferences');
 });

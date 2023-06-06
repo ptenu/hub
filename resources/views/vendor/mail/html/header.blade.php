@@ -1,26 +1,35 @@
 @props(['url'])
 
-<tr>
-    <td class="body" width="100%" cellpadding="0" cellspacing="0" style="border: hidden !important;">
-        <table class="inner-header" align="center" width="570" cellpadding="0" cellspacing="0"
-               role="presentation">
-            <!-- Header content -->
-            <tr>
-                <td class="content-cell">
-                    <table>
-                        <tr>
-                            <td class="header" style="text-align: left; vertical-align: top">
-                                <a href="{{ $url }}" style="display: inline-block;">
-                                    <img src="https://static.peterboroughtenants.app/logos/2023/PNG/header.png" class="logo" alt="PTU Logo">
-                                </a>
-                            </td>
-                            <td style="text-align: right; vertical-align: top">
-                                {{ Illuminate\Mail\Markdown::parse($slot) }}
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
+<table class="wrapper">
+    <tr>
+        <td class="float-center" align="center" valign="top">
+            <center>
+                <table class="container header">
+                    <tr>
+                        <td>
+                            <table class="row">
+                                <tr>
+                                    <th class="first columns">
+                                        <a href="{{ $url }}">
+                                            <img
+                                                src="https://static.peterboroughtenants.app/logos/2023/PNG/header.png"
+                                                alt="PTU Logo"
+                                                class="logo"
+                                            />
+                                        </a>
+                                    </th>
+                                    <th class="columns">
+                                        <p class="text-right">
+                                            {{ Illuminate\Mail\Markdown::parse($slot) }}
+                                        </p>
+                                    </th>
+                                    <th class="expander"></th>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+        </td>
+    </tr>
+</table>

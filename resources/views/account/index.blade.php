@@ -7,7 +7,7 @@
     <ptu-page-header headline="Your account"></ptu-page-header>
     <ptu-tabs>
         <ptu-tab href='/account' selected>Details</ptu-tab>
-        <ptu-tab href='/account/tenancy'>Tenancies</ptu-tab>
+        <ptu-tab href='/account/tenancy'>Tenancy</ptu-tab>
         <ptu-tab href='/account/membership'>Membership</ptu-tab>
         <ptu-tab href='/account/contact-preferences'>Contact Preferences</ptu-tab>
     </ptu-tabs>
@@ -35,6 +35,11 @@
             <dt>Name</dt>
             <dd>{{ $user->full_name }}</dd>
 
+            @if($user->membership()->exists())
+                <dt>Membership number</dt>
+                <dd>{{ $user->membership->id }}</dd>
+            @endif
+
             <dt>Primary email</dt>
             <dd>{{ $user->email->address }}</dd>
 
@@ -49,8 +54,18 @@
             @endif
             @if(isset($user->residentialInterest))
                 <dd>
-                    <address style="font-style: normal; white-space: pre">{{$user->residentialInterest->address->getMultiLineAddress()}}</address>
+                    <address
+                        style="font-style: normal; white-space: pre">{{$user->residentialInterest->address->getMultiLineAddress()}}</address>
                 </dd>
+                <dt>Occupancy status</dt>
+                <dd>
+                    {{ ucwords(str_replace("-", " / ", $user->residentialInterest->type)) }}
+                </dd>
+            @endif
+
+            @if($user->branch)
+                <dt>Branch</dt>
+                <dd>{{$user->branch->full_name}}</dd>
             @endif
 
             @if(isset($user->date_of_birth))

@@ -24,11 +24,29 @@ class Tenancy extends Model
 
     public function address(): BelongsTo
     {
-        return $this->belongsTo(Address::class);
+        return $this->belongsTo(Address::class, 'uprn', 'uprn');
     }
 
     public function contacts(): BelongsToMany
     {
         return $this->belongsToMany(Contact::class);
+    }
+
+    public function getTypeNameAttribute(): string
+    {
+        $type  = $this->type;
+        $map = [
+            'ast' => 'Assured shorthold',
+            'as'  => 'Assured',
+            'flx' => 'Flexible',
+            'pub' => 'Public sector',
+            'reg' => 'Regulated (protected)',
+            'emp' => 'Provided by employer',
+            'mob' => 'Occupier of a mobile home',
+            'lic' => 'Excluded or licence',
+            ''    => 'Not known'
+        ];
+
+        return $map[$type];
     }
 }

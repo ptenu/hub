@@ -43,12 +43,12 @@ class ContactProvider extends ServiceProvider implements UserContract
     }
 
     public function retrieveByToken($identifier, $token) {
-        return Contact::where('id', $identifier)::where('remember_me', $token)->first();
+        return Contact::where('id', $identifier)::where('remember_token', $token)->first();
     }
 
     public function updateRememberToken(Authenticatable $user, $token): void
     {
-        $user->remember_me = $token;
+        $user->remember_token = $token;
         $user->save();
     }
 

@@ -68,4 +68,31 @@ class Address extends Model
     {
         return join(", ", $this->getAddressArray());
     }
+
+    public function getClassificationAttribute(): string
+    {
+        $code = DB::connection('addresses')
+            ->table('codes')
+            ->where('group', 'ClassificationCodes')
+            ->where('code', $this->classification_code)
+            ->first();
+
+        return $code->description;
+    }
+
+    public static function inPostcode($postcode)
+    {
+        return DB::connection('addresses')
+            ->table('addresses_a')
+            ->select('addresses_a.*')
+            ->join('addresses', 'addresses.uprn', 'addresses_a.uprn')
+            ->where('addresses.classification_code', 'like', 'R%')
+            ->where('addresses_a.postcode', '=', $postcode)
+            ->orderBy('addresses.pao_start_number')
+            ->orderBy('addresses.pao_start_suffix')
+            ->orderBy('addresses.pao_text')
+            ->orderBy('addresses.sao_start_number')
+            ->orderBy('addresses.sao_text')
+            ->get();
+    }
 }

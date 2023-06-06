@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('memberships', function (Blueprint $table) {
-            $table->string('id', 20);
-            $table->foreignUlid('contact_id')->index()->unique();
-            $table->string('type', 1)->default("M");
-            $table->unsignedInteger('rate')->default(420);
-            $table->unsignedInteger('payment_day')->default(2);
-            $table->boolean('take_payments')->default(true);
+        Schema::create('branches', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 150)->unique();
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('memberships');
+        Schema::dropIfExists('branches');
     }
 };

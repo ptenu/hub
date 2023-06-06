@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('membership_updates', function (Blueprint $table) {
-            $table->id();
-            $table->string('membership_id', 20)->index();
-            $table->string('status', 15);
-            $table->string('description', 300)->nullable();
-            $table->timestamps();
+        Schema::table('memberships', function (Blueprint $table) {
+            $table->string('payment_method_id', 52)->nullable()->index();
         });
     }
 
@@ -29,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('membership_updates');
+        Schema::table('memberships', function (Blueprint $table) {
+            $table->dropColumn(['payment_method_id']);
+        });
     }
 };

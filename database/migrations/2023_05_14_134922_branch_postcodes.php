@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Branch;
 
 return new class extends Migration
 {
@@ -13,12 +14,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('membership_updates', function (Blueprint $table) {
-            $table->id();
-            $table->string('membership_id', 20)->index();
-            $table->string('status', 15);
-            $table->string('description', 300)->nullable();
-            $table->timestamps();
+        Schema::create('branch_postcodes', function (Blueprint $table) {
+            $table->foreignIdFor(Branch::class);
+            $table->string('postcode_substr');
+            $table->primary('branch_id', 'postcode_substr');
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('membership_updates');
+        Schema::dropIfExists('branch_postcodes');
     }
 };
