@@ -13,85 +13,94 @@
     </ptu-tabs>
 
     <ptu-section sidebar="right">
-        <section class="top-padding">
-            <hgroup style="border: none">
-                <h4>Membership details</h4>
-            </hgroup>
+        <ptu-box heading="Membership details" class="top-padding">
 
             @if($user->membership)
-                <dl>
-                    <dt>
+                <section class="value">
+                    <header>
                         Membership Number
-                    </dt>
-                    <dd>
+                    </header>
+                    <p>
                         {{$user->membership->id}}
-                    </dd>
-                    <dt>Status</dt>
-                    <dd>
+                    </p>
+                </section>
+
+                <section class="value">
+                    <header>
+                        Status
+                    </header>
+                    <div>
                         @switch($user->membership->status)
                             @case('active')
-                                <ptu-chip colour="green">{{ $user->membership->status }}</ptu-chip>
+                                <ptu-chip colour="green" style="font-size: var(--fs-small)">{{ $user->membership->status }}</ptu-chip>
                                 @break
 
                             @case('in-arrears')
-                                <ptu-chip colour="yellow">{{ $user->membership->status }}</ptu-chip>
+                                <ptu-chip colour="yellow" style="font-size: var(--fs-small)">{{ $user->membership->status }}</ptu-chip>
                                 @break
 
                             @case('new')
-                                <ptu-chip colour="blue">{{ $user->membership->status }}</ptu-chip>
+                                <ptu-chip colour="blue" style="font-size: var(--fs-small)">{{ $user->membership->status }}</ptu-chip>
                                 @break
 
                             @default
-                                <ptu-chip colour="red">{{ $user->membership->status }}</ptu-chip>
+                                <ptu-chip colour="red" style="font-size: var(--fs-small)">{{ $user->membership->status }}</ptu-chip>
                         @endswitch
-                    </dd>
+                    </div>
+                </section>
 
-                    <dt>
-                        Branch
-                    </dt>
-                    <dd>
-                        {{ $user->branch->full_name }}
-                    </dd>
+                <section class="value">
+                    <header>Branch</header>
+                    <p>{{ $user->branch->full_name }}</p>
+                </section>
 
-                    <dt>
-                        Joined
-                    </dt>
-                    <dd>
-                        {{ $user->membership->created_at->format("M Y") }}
-                    </dd>
-                    <dd>
-                        {{ $user->membership->created_at->diffInMonths() }} months ago
-                    </dd>
+                <section class="value">
+                    <header>Joined</header>
+                    <div>
+                        <p>{{ $user->membership->created_at->format("M Y") }}, {{ $user->membership->created_at->diffInMonths() }} months ago</p>
+                    </div>
+                </section>
 
-                    @if($user->membership->take_payments)
-                        <dt>Rate</dt>
-                        <dd>Monthly, you pay:</dd>
-                        <dd style="font-size: var(--fs-h4)">
-                            £ {{ number_format($user->membership->rate / 100, 2, '.', '') }}
-                        </dd>
-                        <dd>
-                            <a href="/account/membership/change-rate">Change how much you pay</a>
-                        </dd>
+                @if($user->membership->take_payments)
+                    <section class="value">
+                        <header>Subscription</header>
+                        <aside>
+                            <a href="/account/membership/change-rate">Change</a>
+                        </aside>
+                        <div>
+                            <p>Monthly, you pay:</p>
+                            <p style="font-size: var(--fs-h4)">
+                                £ {{ number_format($user->membership->rate / 100, 2, '.', '') }}</p>
+                        </div>
+                    </section>
 
-                        <dt>Payment day</dt>
-                        <dd>
+                    <section class="value">
+                        <header>Payment day</header>
+                        <aside>
+                            <a href="/account/membership/change-payment-day">Change</a>
+                        </aside>
+                        <p>
                             {{$user->membership->payment_day}}<sup>{{\Carbon\Carbon::create('2020', '08', $user->membership->payment_day)->format("S")}}</sup>
                             of every month
-                        </dd>
-                        <dd>
-                            <a href="/account/membership/change-payment-day">Change which day you're charged</a>
-                        </dd>
-                    @else
-                        <dt>Rate</dt>
-                        <dd>Payments are paused</dd>
-                    @endif
+                        </p>
+                    </section>
+                @else
+                    <section class="value">
+                        <header>Payment status</header>
+                        <p>Payments are paused</p>
+                    </section>
+                @endif
 
-                    @php
+                @php
                     $pm = $user->getPaymentMethod();
-                    @endphp
-                    @if($pm)
-                        <dt>Payment method</dt>
-                        <dd>
+                @endphp
+                @if($pm)
+                    <section class="value">
+                        <header>Payment method</header>
+                        <aside>
+                            <a href="/account/membership/update-payment-method">Change</a>
+                        </aside>
+                        <div>
                             <ptu-payment-method type="{{$pm['type']}}"
                                                 brand="{{ $pm['brand'] }}"
                                                 account-no="{{ $pm['last4'] }}"
@@ -99,12 +108,10 @@
                                                     sort-code="{{$pm['sort_code']}}"
                                 @endisset
                             ></ptu-payment-method>
-                        </dd>
-                        <dd>
-                            <a href="/account/membership/update-payment-method">Change payment method</a>
-                        </dd>
-                    @endif
-                </dl>
+                        </div>
+                    </section>
+
+                @endif
             @else
                 <div class="card">
                     <header>
@@ -119,7 +126,7 @@
                     </footer>
                 </div>
             @endif
-        </section>
+        </ptu-box>
 
         <section style="margin-top: var(--layout-gap)">
             @include('blocks.payment-details')

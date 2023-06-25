@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Extensions\Stripe;
+use App\Observers\ContactObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

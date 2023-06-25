@@ -29,54 +29,59 @@
 </head>
 
 <body>
-<ptu-navbar>
-    <ptu-logo></ptu-logo>
-    <ptu-visibility-toggle slot='right' element-id='main-menu'>Menu</ptu-visibility-toggle>
-    <ptu-user-button slot="right"
-                     @auth
-                         authenticated="true"
-                         href="/dashboard"
-                     @endauth
-                     @guest href="/login" @endguest>
-        @auth
-            {{ Auth::user()->full_name }}
-        @endauth
-        @guest
-            Login
-        @endguest
-    </ptu-user-button>
-</ptu-navbar>
-<ptu-nav-menu id='main-menu'>
+<ptu-navbar
     @auth
-        <div class="card"
-             style="display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; background-color: rgba(10,10,10,0.18)">
-            <strong>
-                Hi {{ Auth::user()->given_name }}. <a href="/account">Edit your details</a>.
-            </strong>
-            <aside>
-                <form method="post" action="/logout">
-                    {{ csrf_field() }}
-                    <button>Logout</button>
-                </form>
-            </aside>
-        </div>
+        show-apps
+        user-name="{{ Auth::user()->full_name }}"
     @endauth
-    <section>
-        <hgroup>
-            <h5>About us</h5>
-        </hgroup>
-    </section>
-    <section>
-        <hgroup>
-            <h5>Guides & Information</h5>
-        </hgroup>
-    </section>
-    <section>
-        <hgroup>
-            <h5>For members</h5>
-        </hgroup>
-    </section>
-</ptu-nav-menu>
+>
+    @auth
+        <section slot="user-menu">
+            <ul>
+                <li>
+                    <a href="/account" class="nav-link">Account details</a>
+                </li>
+                <li>
+                    <a href="/account/membership" class="nav-link">Membership details</a>
+                </li>
+                <li>
+                    <a href="/account/contact-preferences" class="nav-link">Contact preferences</a>
+                </li>
+                <li>
+                    <form method="post" action="/logout">
+                        {{ csrf_field() }}
+                        <button>Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </section>
+    @endauth
+
+    <ptu-grid>
+        <section>
+            <hgroup>
+                <h5>About us</h5>
+            </hgroup>
+        </section>
+        <section>
+            <hgroup>
+                <h5>Guides & Information</h5>
+            </hgroup>
+        </section>
+        <section>
+            <hgroup>
+                <h5>For members</h5>
+            </hgroup>
+            <ul>
+                @guest
+                    <li>
+                        <a href="/login">Login</a>
+                    </li>
+                @endguest
+            </ul>
+        </section>
+    </ptu-grid>
+</ptu-navbar>
 
 @if(session()->has("status"))
     <ptu-section class="top-padding bottom-padding">

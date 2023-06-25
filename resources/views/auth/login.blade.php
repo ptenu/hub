@@ -24,7 +24,7 @@
                 When you click to proceed, we'll send you a temporary password which you can use this once to log in.
             </p>
             <footer class="top-padding">
-                <button>Send password</button>
+                <button class="primary-button">Send password</button>
             </footer>
         </form>
     </ptu-section>

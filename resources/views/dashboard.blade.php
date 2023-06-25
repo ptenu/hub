@@ -11,42 +11,21 @@
 
     <ptu-section class="top-padding" sidebar="right">
         <article style="display: flex; flex-direction: column; gap: calc(var(--layout-gap) * 2)">
-            <section>
-                <hgroup>
-                    <h3>Messages</h3>
-                    <p>All emails recently sent to you through our system will appear here.</p>
-                </hgroup>
-                <div class="card">
-                    There are no messages to show.
-                </div>
-            </section>
+            <ptu-box heading="Messages">
+                There are no messages to show.
+            </ptu-box>
 
-            <section>
-                <hgroup>
-                    <h3>Upcoming events</h3>
-                    <p>Events and meetings happening in the near future will be shown here.</p>
-                </hgroup>
-                <div class="card">
-                    There are no events to show.
-                </div>
-            </section>
+            <ptu-box heading="Upcoming events">
+                There are no events to show.
+            </ptu-box>
 
-            <section>
-                <hgroup>
-                    <h3>Cases</h3>
-                    <p>This list will show any support cases you are currently involved in.</p>
-                </hgroup>
-                <div class="card">
-                    You have no open cases.
-                    <footer>
-                        <a href="/">Request help</a>
-                    </footer>
-                </div>
-            </section>
+            <ptu-box heading="Your cases">
+                <a href="/" slot="actions">Request help</a>
+                You have no open cases.
+            </ptu-box>
         </article>
 
         <nav slot="sidebar">
-            <h6 style="font-size: var(--fs-h4)">Useful links</h6>
             <ul class="list">
                 <li>
                     <a href="/account">View and update your personal details</a>

@@ -28,7 +28,7 @@
             </ptu-fieldset>
 
             <p>
-                <button>Login</button>
+                <button class="primary-button">Login</button>
             </p>
         </form>
     </ptu-section>

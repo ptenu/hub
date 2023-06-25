@@ -13,30 +13,17 @@
     </ptu-tabs>
 
     <ptu-section sidebar="right">
-        <section class="top-padding">
-            <hgroup style="border: none">
-                <h4>Email addresses</h4>
-            </hgroup>
-            <button class="primary-button">Make primary</button>
-            <button>Delete</button>
-
+        <ptu-box heading="Email addresses" style="margin: var(--layout-gap) 0;">
+            <a href="/" slot="actions">Add new</a>
             @if($user->emails()->exists())
-                <table>
-                    <thead>
-                    <tr>
-                        <th colspan="3">Email</th>
-                    </tr>
-                    </thead>
+                <table style="margin: 0">
                     <tbody>
                     @foreach($user->emails as $e)
                         <tr>
-                            <td>
-                                <input type="radio" name="email" value="{{ $e->id }}">
-                            </td>
                             <th>{{$e->address}}</th>
                             <td>
                                 @if($e->address = $user->email->address)
-                                    <ptu-chip>Primary</ptu-chip>
+                                    <ptu-chip style="font-size: var(--fs-small)">Primary</ptu-chip>
                                 @endif
                             </td>
                         </tr>
@@ -44,34 +31,22 @@
                     </tbody>
                 </table>
             @else
-            <div class="card">
-                <header>There are no email addresses on record for you.</header>
-            </div>
+                <p>There are no email addresses on record for you.</p>
             @endif
 
-        </section>
+        </ptu-box>
 
-        <section class="top-padding">
-            <hgroup>
-                <h4>Telephone numbers</h4>
-            </hgroup>
+        <ptu-box heading="Telephone numbers" style="margin: var(--layout-gap) 0;">
+            <a href="/" slot="actions">Add new</a>
             @if($user->telephoneNumbers()->exists())
-                <table>
-                    <thead>
-                    <tr>
-                        <th colspan="3">Email</th>
-                    </tr>
-                    </thead>
+                <table style="margin: 0">
                     <tbody>
                     @foreach($user->telephoneNumbers as $t)
                         <tr>
-                            <td>
-                                <input type="radio" name="email" value="{{ $t->id }}">
-                            </td>
                             <th>{{$t->number}}</th>
                             <td>
                                 @if($t->number = $user->telephoneNumber->number)
-                                    <ptu-chip>Primary</ptu-chip>
+                                    <ptu-chip style="font-size: var(--fs-small)">Primary</ptu-chip>
                                 @endif
                             </td>
                         </tr>
@@ -79,10 +54,8 @@
                     </tbody>
                 </table>
             @else
-                <div class="card">
-                    <header>There are no telephone numbers on record for you.</header>
-                </div>
+                <p>There are no telephone numbers on record for you.</p>
             @endif
-        </section>
+        </ptu-box>
     </ptu-section>
 @endsection

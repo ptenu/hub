@@ -4,7 +4,9 @@
 
 @section('content')
 
-    <ptu-page-header headline="Your account"></ptu-page-header>
+    <ptu-page-header headline="Your account">
+        @include('blocks.membership-error')
+    </ptu-page-header>
     <ptu-tabs>
         <ptu-tab href='/account' selected>Details</ptu-tab>
         <ptu-tab href='/account/tenancy'>Tenancy</ptu-tab>
