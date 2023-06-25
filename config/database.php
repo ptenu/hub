@@ -13,14 +13,16 @@ use Aws\SecretsManager\SecretsManagerClient;
 |
 */
 $client = new SecretsManagerClient([
-    'profile' => 'default',
+    'credentials' => [
+      'key' => env('AWS_ACCESS_KEY_ID'),
+      'secret' => env('AWS_SECRET_ACCESS_KEY')
+    ],
     'version' => '2017-10-17',
     'region' => env("AWS_DEFAULT_REGION", "eu-west-1")
 ]);
 
-$secretName = env("DB_SECRET_NAME");
 $secretResult = $client->getSecretValue([
-    'SecretId' => $secretName,
+    'SecretId' => env("DB_SECRET_NAME"),
 ]);
 
 if (isset($secretResult['SecretString'])) {
