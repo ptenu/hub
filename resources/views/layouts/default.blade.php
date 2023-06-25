@@ -8,7 +8,9 @@
 
     <link rel='stylesheet' href='https://static.peterboroughtenants.app/elements/dist/ptu-elements/ptu-elements.css'/>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=atkinson-hyperlegible:400,400i,700,700i|sofia-sans:300,400,500,600,700,800,900" rel="stylesheet" />
+    <link
+        href="https://fonts.bunny.net/css?family=atkinson-hyperlegible:400,400i,700,700i|sofia-sans:300,400,500,600,700,800,900"
+        rel="stylesheet"/>
 
     <style>
         * {
@@ -32,7 +34,7 @@
 <ptu-navbar
     @auth
         show-apps
-        user-name="{{ Auth::user()->full_name }}"
+    user-name="{{ Auth::user()->full_name }}"
     @endauth
 >
     @auth
@@ -73,6 +75,11 @@
                 <h5>For members</h5>
             </hgroup>
             <ul>
+                @auth
+                    <li>
+                        <a href="/dashboard" class="nav-link">Dashboard</a>
+                    </li>
+                @endauth
                 @guest
                     <li>
                         <a href="/login" class="nav-link">Login</a>
@@ -81,6 +88,16 @@
             </ul>
         </section>
     </ptu-grid>
+
+    @auth
+        <ptu-grid slot="apps">
+            <ptu-app-icon app="web" href="/">Main Website</ptu-app-icon>
+            <ptu-app-icon app="mail" href="/">Messages</ptu-app-icon>
+            <ptu-app-icon app="forum" href="/">Forum</ptu-app-icon>
+            <ptu-app-icon app="wiki" href="/">Wiki</ptu-app-icon>
+            <ptu-app-icon app="learning" href="/">Learning Centre</ptu-app-icon>
+        </ptu-grid>
+    @endauth
 </ptu-navbar>
 
 @if(session()->has("status"))
