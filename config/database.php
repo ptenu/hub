@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Str;
-use Aws\SecretsManager\SecretsManagerClient;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -12,27 +12,8 @@ use Aws\SecretsManager\SecretsManagerClient;
 | the RDS database.
 |
 */
-$client = new SecretsManagerClient([
-    'credentials' => [
-      'key' => env('AWS_ACCESS_KEY_ID'),
-      'secret' => env('AWS_SECRET_ACCESS_KEY')
-    ],
-    'version' => '2017-10-17',
-    'region' => env("AWS_DEFAULT_REGION", "eu-west-1")
-]);
 
-$secretResult = $client->getSecretValue([
-    'SecretId' => env("DB_SECRET_NAME"),
-]);
-
-if (isset($secretResult['SecretString'])) {
-    $dbSecret = json_decode($secretResult['SecretString']);
-} else {
-    $dbSecret = json_decode(base64_decode($secretResult['SecretBinary']));
-}
-
-$dbUsername = $dbSecret->username;
-$dbPassword = $dbSecret->password;
+$credentials = ['username' => '', 'password'=> ''];
 
 return [
 
@@ -72,8 +53,8 @@ return [
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'forge'),
-            'username' => $dbUsername,
-            'password' => $dbPassword,
+            'username' => $credentials['username'],
+            'password' => $credentials['password'],
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
@@ -86,8 +67,8 @@ return [
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_ADDRESS_DATABASE', 'forge'),
-            'username' => $dbUsername,
-            'password' => $dbPassword,
+            'username' => $credentials['username'],
+            'password' => $credentials['password'],
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,

@@ -1,13 +1,11 @@
-my-website.com {
-    # Resolve the root directory for the app
-    root * /var/www/my-website/public
+{
+    admin off
+    local_certs
+}
 
-    # Provide Zstd and Gzip compression
+ptu.localhost {
+    root * /home/alex/ptu-hub/public
     encode zstd gzip
-
-    # Allow caddy to serve static files
+    php_fastcgi unix//run/php/php8.2-fpm.sock
     file_server
-
-    # Enable PHP-FPM
-    php_fastcgi unix//run/php/php7.4-fpm.sock
 }

@@ -75,7 +75,7 @@
             <ul>
                 @guest
                     <li>
-                        <a href="/login">Login</a>
+                        <a href="/login" class="nav-link">Login</a>
                     </li>
                 @endguest
             </ul>
