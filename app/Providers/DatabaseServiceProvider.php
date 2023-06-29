@@ -34,14 +34,22 @@ class DatabaseServiceProvider extends ServiceProvider
         $this->setConfig(Cache::get('db-credentials'));
 
         try {
-            DB::connection('main')->getPdo();
-            DB::connection('addresses')->getPdo();
+            DB::connection('main')->reconnect();
+            DB::connection('addresses')->reconnect();
         }
         catch (\PDOException) {
             Cache::set('db-credentials', $this->getDbCredentials());
             $this->setConfig(Cache::get('db-credentials'));
-            DB::connection('main')->getPdo();
-            DB::connection('addresses')->getPdo();
+            DB::connection('main')->reconnect();
+            DB::connection('addresses')->reconnect();
+        }
+
+        try {
+            DB::connection()->getPdo();
+        }
+        catch (\Exception)
+        {
+            abort(500);
         }
     }
 

@@ -9,3 +9,10 @@ ptu.localhost {
     php_fastcgi unix//run/php/php8.2-fpm.sock
     file_server
 }
+
+ptu-app.localhost {
+    root * /home/alex/ptu-hub/public
+    encode zstd gzip
+    php_fastcgi unix//run/php/php8.2-fpm.sock
+    file_server
+}

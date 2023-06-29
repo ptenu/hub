@@ -12,7 +12,9 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "prinsfrank/standards": "^2.0",
-        "stripe/stripe-php": "^10.13"
+        "stripe/stripe-php": "^10.13",
+        "twilio/sdk": "^7.5",
+        "zadarma/user-api-v1": "^1.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.8",

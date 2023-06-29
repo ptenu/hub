@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Extensions\Stripe;
+use App\Extensions\UsesRoles;
 use App\Observers\ContactObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,7 +21,7 @@ use PrinsFrank\Standards\Language\LanguageAlpha2;
 
 class Contact extends Authenticatable
 {
-    use HasFactory, HasTimestamps, HasUlids;
+    use HasFactory, HasTimestamps, HasUlids, UsesRoles;
 
     protected $dates = [
         'date_of_birth'
@@ -28,12 +29,20 @@ class Contact extends Authenticatable
 
     public function emails(): HasMany
     {
-        return $this->hasMany(Email::class);
+        return $this->hasMany(Email::class)
+            ->orderBy('priority', 'desc')
+            ->orderBy('id');
     }
 
     public function email(): HasOne
     {
-        return $this->hasOne(Email::class)->ofMany('priority', 'max');
+        return $this->hasOne(Email::class)
+            ->ofMany([
+                'priority' => 'max',
+                'id' => 'min'
+            ], function (Builder $query) {
+                $query->whereNotNull('verified_at');
+            });
     }
 
     public function telephoneNumbers(): HasMany
@@ -43,7 +52,13 @@ class Contact extends Authenticatable
 
     public function telephoneNumber(): HasOne
     {
-        return $this->hasOne(TelephoneNumber::class)->ofMany('priority', 'max');
+        return $this->hasOne(TelephoneNumber::class)
+            ->ofMany([
+                'priority' => 'max',
+                'id' => 'min'
+            ], function (Builder $query) {
+                $query->whereNotNull('verified_at');
+            });
     }
 
     public function membership(): HasOne

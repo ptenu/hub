@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Mailables\Address;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -50,6 +51,12 @@ class LoginController extends Controller
             return view('auth.password', ['email' => $credentials['email']]);
         }
 
+        if (App::environment('local')) {
+            Auth::loginUsingId($user->getAuthIdentifier());
+            $request->session()->regenerate();
+            return redirect()->intended('/dashboard');
+        }
+
         $this->setAndSendPassword($user, $credentials['email']);
 
         return view('auth.password', [
@@ -80,7 +87,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended();
+            return redirect()->intended('/dashboard');
         }
 
         return back()->withErrors([

@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Extensions\Stripe;
+use App\Extensions\TwillioService;
+use App\Mail\VerifyLink;
 use App\Models\Address;
+use App\Models\Email;
 use App\Models\PropertyInterest;
+use App\Models\TelephoneNumber;
 use App\Models\Tenancy;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use PrinsFrank\Standards\Language\LanguageAlpha2;
-use PrinsFrank\Standards\Language\LanguageName;
 
 class AccountController extends Controller
 {
@@ -21,6 +26,7 @@ class AccountController extends Controller
             "user" => $request->user()
         ]);
     }
+
     public function dashboard(Request $request)
     {
         return view('dashboard', [
@@ -201,8 +207,7 @@ class AccountController extends Controller
         // Set start date
         if ($request->input('start_date.day')
             && $request->input('start_date.month')
-            && $request->input('start_date.year'))
-        {
+            && $request->input('start_date.year')) {
             $tenancy->start_date = Carbon::create(
                 $request->input('start_date.year'),
                 $request->input('start_date.month'),
@@ -300,8 +305,7 @@ class AccountController extends Controller
 
     public function rate(Request $request)
     {
-        if ($request->method() == 'GET')
-        {
+        if ($request->method() == 'GET') {
             return view('account.change-rate', [
                 'user' => $request->user()
             ]);
@@ -323,8 +327,7 @@ class AccountController extends Controller
 
     public function paymentDay(Request $request)
     {
-        if ($request->method() == 'GET')
-        {
+        if ($request->method() == 'GET') {
             return view('account.change-payment-day', [
                 'user' => $request->user()
             ]);
@@ -345,6 +348,208 @@ class AccountController extends Controller
         return view('account.contact-details', [
             'user' => $request->user()
         ]);
+    }
+
+    public function addEmail(Request $request)
+    {
+        if ($request->method() == 'GET') {
+            return view('account.new-email', [
+                'user' => $request->user()
+            ]);
+        }
+
+        $request->validate([
+            "email" => "required|email|unique:emails,address"
+        ]);
+
+        $email = new Email();
+        $email->address = $request->input('email');
+        $email->contact_id = $request->user()->id;
+
+        // Handle consent codes
+        if ($request->has('consent')) {
+            $consentString = "";
+            foreach ($request->consent as $code) {
+                $consentString = $consentString . strtoupper($code);
+            }
+            $email->consent_codes = $consentString;
+        }
+
+        $email->save();
+
+        // Send verification link
+        $token = bin2hex(random_bytes(8));
+        $endpoint = Crypt::encryptString($email->address);
+        $verifyUrl = route('verify-email', [$endpoint, $token]);
+
+        DB::table('verification_codes')->insert([
+            'endpoint' => $email->address,
+            'sent_at' => Carbon::now(),
+            'sent_via' => 'email',
+            'token' => $token
+        ]);
+
+        Mail::to($email->address)->send(new VerifyLink($verifyUrl));
+
+        session()->flash('status', "The email address has been added, please check your inbox (and spam folders) for a verification email.");
+        return redirect()->route('account.contact');
+    }
+
+    public function addTelephone(Request $request)
+    {
+        if ($request->method() == 'GET') {
+            return view('account.new-telephone', [
+                'user' => $request->user()
+            ]);
+        }
+
+        $twillio = TwillioService::getClient();
+
+        $request->validate([
+            'number' => 'required|starts_with:01,02,07|size:11|unique:telephone_numbers,number'
+        ]);
+
+        $internationalNumber = "+44" . substr($request->input('number'), 1);
+
+        // Perform number lookup
+        $lookup = $twillio->lookups->v2->phoneNumbers($internationalNumber)
+                                       ->fetch([
+                                           "fields" => "line_type_intelligence"
+                                       ]);
+
+        if ($lookup->valid !== true) {
+            session()->flash('error', 'The phone number you entered was not valid.');
+            return redirect()->route('account.contact');
+        }
+
+        if (in_array(
+            $lookup->lineTypeIntelligence['type'],
+            ['premium', 'sharedCost', 'uan', 'pager', 'voicemail', 'tollFree']
+        )) {
+            session()->flash('error', 'Unfortunately, the type of number you tried to add is not supported.');
+            return redirect()->route('account.contact');
+        }
+
+        // Create number
+        $number = new TelephoneNumber();
+        $number->contact_id = $request->user()->id;
+        $number->number = $lookup->phoneNumber;
+        $number->national_number = $lookup->nationalFormat;
+        $number->type = $lookup->lineTypeIntelligence['type'];
+        $number->carrier = $lookup->lineTypeIntelligence['carrier_name'];
+        $number->sms_enabled = $number->type === "mobile";
+
+        // Handle consent codes
+        if ($request->has('consent')) {
+            $consentString = "";
+            foreach ($request->consent as $code) {
+                $consentString = $consentString . strtoupper($code);
+            }
+            $number->consent_codes = $consentString;
+        }
+
+        // Save number
+        $number->save();
+
+        // Perform verification call
+        $verification = $twillio->verify->v2->services(env('VERIFY_SERVICE_ID'))
+            ->verifications
+            ->create(
+                $number->number,
+                $number->sms_enabled ? "sms" : "call"
+            );
+
+        return view('account.verify', [
+            'user' => $request->user(),
+            'endpoint' => $number->number,
+            'via' => $number->sms_enabled ? "sms" : "call"
+        ]);
+    }
+
+    public function verify(Request $request) {
+        $request->validate([
+            'endpoint' => 'required',
+            'via' => 'required',
+            'code' => 'required'
+        ]);
+
+        if ($request->input('via') === "sms" || $request->input('via') === "call") {
+            $twillio = TwillioService::getClient();
+            $check = $twillio->verify->v2->services(env('VERIFY_SERVICE_ID'))
+                                         ->verificationChecks
+                                         ->create([
+                                             "to" => $request->input('endpoint'),
+                                             'code' => $request->input('code')
+                                         ]);
+            if ($check->status !== "approved") {
+                session()->flash('error', "It wasn't possible to verify your new number.");
+                return redirect()->refresh();
+            }
+                $number = TelephoneNumber::query()
+                    ->where('number', $check->to)
+                    ->where('contact_id', $request->user()->id)
+                    ->firstOrFail();
+                $number->verified_at = Carbon::now();
+                $number->save();
+                session()->flash('status', 'Your new telephone number has been verified and added.');
+                return redirect()->route('account.contact');
+        }
+    }
+
+    public function verifyToken(Request $request, $endpoint, $token)
+    {
+        $emailAddress = Crypt::decryptString($endpoint);
+        $tokenValid = DB::table('verification_codes')
+            ->where('endpoint', $emailAddress)
+            ->where('sent_at', '>', Carbon::now()->subHours(1))
+            ->where('token', $token)
+            ->exists();
+
+        if (!$tokenValid) {
+            session()->flash("error", "The verification link was not valid.");
+        }
+        else {
+            $email = Email::query()->where('address', $emailAddress)->firstOrFail();
+            $email->verified_at = Carbon::now();
+            $email->save();
+            session()->flash('status', "Your email was verified successfully.");
+        }
+
+        if (Auth::guest()) {
+            return redirect('/');
+        }
+
+        return redirect()->route('account.contact');
+
+    }
+
+    public function deleteTelephone(Request $request, TelephoneNumber $number) {
+        if ($number->contact->id != $request->user()->id) {
+            session()->flash('error', 'You are not allowed to delete that telephone number.');
+            return redirect()->route('account.contact');
+        }
+
+        session()->flash('status', 'The number ' . $number->normalisedNumber() . ' was deleted.');
+        $number->delete();
+
+        return redirect()->route('account.contact');
+    }
+
+    public function deleteEmailAddress(Request $request, Email $email) {
+        if ($email->contact->id != $request->user()->id) {
+            session()->flash('error', 'You are not allowed to delete that email address.');
+            return redirect()->route('account.contact');
+        }
+
+        if ($request->user()->emails()->count() == 1) {
+            session()->flash('error', 'You cannot delete this email address, as you must have at least one on record.');
+            return redirect()->route('account.contact');
+        }
+
+        session()->flash('status', 'The email address ' . $email->address . ' was deleted.');
+        $email->delete();
+
+        return redirect()->route('account.contact');
     }
 }
 

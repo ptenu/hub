@@ -47,7 +47,7 @@
 
             @if($user->telephoneNumber)
                 <dt>Telephone number</dt>
-                <dd>{{ $user->telephoneNumber->number }}</dd>
+                <dd>{{ $user->telephoneNumber->national_number }}</dd>
             @endif
 
             <dt>Address</dt>

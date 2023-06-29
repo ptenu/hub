@@ -10,7 +10,7 @@
     </ptu-hero>
 
     <ptu-section class="top-padding" sidebar="right">
-        <article style="display: flex; flex-direction: column; gap: calc(var(--layout-gap) * 2)">
+        <article>
             <ptu-box heading="Messages">
                 There are no messages to show.
             </ptu-box>

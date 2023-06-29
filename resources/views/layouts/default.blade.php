@@ -19,7 +19,7 @@
 
         :root {
             --brand-font: 'Atkinson Hyperlegible';
-            --header-font: 'Sofia Sans';
+            --header-font: 'Atkinson Hyperlegible';
             --border-radius: 0;
         }
     </style>
@@ -104,6 +104,14 @@
     <ptu-section class="top-padding bottom-padding">
         <div class="card @if(session()->has("status-class")){{ session()->get('status-class')}}@endif">
             {{session()->get("status")}}
+        </div>
+    </ptu-section>
+@endif
+
+@if(session()->has("error"))
+    <ptu-section class="top-padding bottom-padding">
+        <div style="background-color: var(--colour-red-100)" class="card @if(session()->has("status-class")){{ session()->get('status-class')}}@endif">
+            {{session()->get("error")}}
         </div>
     </ptu-section>
 @endif
