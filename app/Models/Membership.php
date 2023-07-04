@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,7 +41,8 @@ class Membership extends Model
 
     public function latestPayment(): HasOne
     {
-        return $this->hasOne(Payment::class)->ofMany('created_at', 'max');
+        return $this->hasOne(Payment::class)
+                    ->ofMany('created_at', 'max');
     }
 
     public function charges(): HasMany
@@ -55,7 +57,8 @@ class Membership extends Model
 
     public function latestUpdate(): HasOne
     {
-        return $this->hasOne(MembershipUpdate::class)->ofMany('created_at', 'max');
+        return $this->hasOne(MembershipUpdate::class)
+                    ->ofMany('created_at', 'max');
     }
 
     public function getBalance(Carbon $at = null): int
@@ -191,6 +194,6 @@ class Membership extends Model
 
     public function getStatusAttribute(): string
     {
-        return $this->status();
+        return $this->latestUpdate->status;
     }
 }

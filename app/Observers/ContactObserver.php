@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Extensions\Stripe;
+use App\Jobs\PersistMembershipStatus;
+use App\Jobs\SyncStripeCustomer;
 use App\Models\Contact;
 use Stripe\Exception\ApiErrorException;
 
@@ -17,16 +19,15 @@ class ContactObserver
      */
     public function updated(Contact $contact): void
     {
-        if (is_null($contact->stripe_customer_id)) {
-            return;
+        // Persist status
+        if ($contact->membership != null) {
+            PersistMembershipStatus::dispatch($contact->membership);
         }
 
-        $stripe = Stripe::client();
-        $stripe->client->customers->update($contact->stripe_customer_id, [
-            'email' => $contact->email ? $contact->email->address : null,
-            'name' => $contact->full_name,
-            'phone' => $contact->telephoneNumber ? $contact->telephoneNumber->number : null,
-        ]);
+        // Handle stripe stuff
+        if (!is_null($contact->stripe_customer_id)) {
+            SyncStripeCustomer::dispatch($contact);
+        }
     }
 
     /**

@@ -1,4 +1,6 @@
-<ptu-callout local-number='800 707 42 02'></ptu-callout>
+@if(request()->host() == env('APP_URL'))
+    <ptu-callout local-number='800 707 42 02'></ptu-callout>
+@endif
 
 <ptu-footer>
     <section>

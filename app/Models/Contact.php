@@ -112,7 +112,7 @@ class Contact extends Authenticatable
             ->orderBy('start_date', 'desc');
     }
 
-    public function branch(): Builder
+    public function branches(): Builder
     {
         return Branch::query()
             ->select('branches.*')
@@ -140,7 +140,7 @@ class Contact extends Authenticatable
 
     public function getBranchAttribute(): ?Branch
     {
-        return $this->branch()->first();
+        return $this->branches()->first();
     }
 
     public function getCurrentTenancyAttribute(): ?Tenancy

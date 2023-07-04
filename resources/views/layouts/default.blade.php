@@ -92,10 +92,7 @@
     @auth
         <ptu-grid slot="apps">
             <ptu-app-icon app="web" href="/">Main Website</ptu-app-icon>
-            <ptu-app-icon app="mail" href="/">Messages</ptu-app-icon>
-            <ptu-app-icon app="forum" href="/">Forum</ptu-app-icon>
-            <ptu-app-icon app="wiki" href="/">Wiki</ptu-app-icon>
-            <ptu-app-icon app="learning" href="/">Learning Centre</ptu-app-icon>
+            <ptu-app-icon app="organisation" href="{{route('org.index')}}">Organisation</ptu-app-icon>
         </ptu-grid>
     @endauth
 </ptu-navbar>

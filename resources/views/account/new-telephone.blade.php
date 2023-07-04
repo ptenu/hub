@@ -13,6 +13,11 @@
         <form method="post">
             {{ csrf_field() }}
             <ptu-fieldset label="New telephone number">
+                <section class="prose">
+                    <p>
+                        The number must start with 01, 02, or 07, and must not include any spaces.
+                    </p>
+                </section>
                 <ptu-text-input name="number"
                                 label="Telephone number"
                                 type="text"

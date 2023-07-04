@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('branch_postcodes', function (Blueprint $table) {
             $table->foreignIdFor(Branch::class);
             $table->string('postcode_substr');
-            $table->primary('branch_id', 'postcode_substr');
+            $table->primary(['branch_id', 'postcode_substr'], "bp_id");
         });
     }
 

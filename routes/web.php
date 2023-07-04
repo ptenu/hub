@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\OrganisationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -75,3 +76,39 @@ Route::get('/id/verify/{endpoint}/{token}', [AccountController::class, 'verifyTo
     ->domain(env('APP_URL'))
     ->name('verify-email');
 
+/*
+|--------------------------------------------------------------------------
+| Organisation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('/organisation')
+    ->domain(env('BACKEND_URL'))
+    ->middleware('auth')
+    ->controller(OrganisationController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('org.index');
+
+        // Members --------------------------------------------------------
+        Route::get('/members', 'listMembers')->name('org.members');
+        Route::get('/members/{contact}', 'getContact')->name('org.contact');
+        Route::get('/members/{contact}/edit', 'editContact')->name('org.contact.edit');
+        Route::post('/members/{contact}', 'saveContact');
+
+        // Branches -------------------------------------------------------
+        Route::get('/branches', 'listBranches')->name('org.branches');
+        Route::post('/branches', 'saveNewBranch');
+        Route::get('/branches/create', 'createBranch')->name('org.branches.create');
+        Route::get('/branches/{branch}', 'getBranch')->name('org.branch');
+        Route::get('/branches/{branch}/edit', 'editBranch')->name('org.branch.edit');
+        Route::delete('/branches/{branch}', 'getBranch');
+        Route::post('/branches/{branch}', 'saveBranch');
+
+        // Events ---------------------------------------------------------
+        Route::get('/events', 'listEvents')->name('org.events');
+        Route::get('/events/create', 'createEvent')->name('org.events.create');
+        Route::post('/events', 'saveNewEvent');
+        Route::get('/events/{event}', 'getEvent')->name('org.event');
+        Route::get('/events/{id}/edit', 'editEvent')->name('org.events.edit');
+        Route::post('/events/{id}', 'saveEvent');
+
+    });

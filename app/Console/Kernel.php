@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Jobs\CreateCharges;
+use App\Jobs\PersistAllStatuses;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,7 +17,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Tasks running less than once a day
+        $schedule->job(new CreateCharges)->dailyAt('01:00');
+        $schedule->job(new PersistAllStatuses)->dailyAt('08:00');
+
+        // Tasks which run multiple times per day
+        // ...
     }
 
     /**
